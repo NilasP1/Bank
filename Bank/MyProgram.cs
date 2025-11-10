@@ -18,8 +18,14 @@ namespace Bank
             // LOGIN / CREATE USER
             bool running = true; // Main menu loop control
             bool userLoggingIn = true; // Login loop control
+
+            
+
             while (true)// Infinite loop to allow multiple logins and user creations
             {
+                string adminUsername = null;
+                string adminPassword = null;
+
                 while (userLoggingIn) //Login loop for user creation and login
                 {
                     Console.WriteLine("Login(1) or create user(2):");
@@ -31,6 +37,14 @@ namespace Bank
                         string inputUsername = Console.ReadLine(); //Saving input username in inputUsername
                         Console.WriteLine("Enter password:");
                         string inputPassword = Console.ReadLine(); //Saving input password in inputPassword
+
+                        if(inputUsername == "Admin" && inputPassword == "Admin")
+                        {
+                            userLoggingIn = false; // exit login loop
+                            adminUsername = inputUsername;
+                            adminPassword = inputPassword;
+                            continue;
+                        }
 
                         User foundUser = users.Find(u => u.username == inputUsername && u.password == inputPassword); // Finding user with matching username and password
 
@@ -55,6 +69,13 @@ namespace Bank
                         Console.WriteLine("Create a password:");
                         string newPassword = Console.ReadLine(); //Saving new password in newPassword
 
+                        /*
+                         *  bool som antar att det inte finns repeterat
+                         *  Gå igenom varenda en av users
+                         *  om någon user har samma namn, då min bool ändrar, och slutar loopen
+                         *  sedan, om min bool visar att det inte finns en annan, då gör en sak
+                         */
+
                         if (users.Exists(u => u.username == newUsername)) // Check if username already exists 
                         {
                             Console.WriteLine("Username already exists. Try a different one."); // Error message for existing username
@@ -74,8 +95,29 @@ namespace Bank
                     }
                 }
 
+                if (adminPassword == "Admin" && adminUsername == "Admin")
+                {
+                    Console.Clear();
+
+                    Console.WriteLine("Here is a list of all Users and those users accounts and those accounts balances:");
+                    foreach (User u in users) // Iterating through all users in the list called users
+                    {
+                        Console.WriteLine($"User: {u.username}"); // Printing username
+                        foreach (Account acc in u.accountsOnThisUser) // Iterating through each user's accounts
+                        {
+                            Console.WriteLine($"\tAccount: {acc.name}, Balance: {acc.balance}"); // Printing account name and balance
+                        }
+                    }
+
+                    PressAnyKeyToContinue();
+                    adminPassword = null;
+                    adminUsername = null;
+                    userLoggingIn = true;
+                    continue;
+                }
+
                 // MAIN MENU
-                
+
                 while (running)
                 {
                     Console.WriteLine($"Welcome, {currentUser.username}!"); // Greeting the logged-in user
@@ -93,21 +135,53 @@ namespace Bank
                     switch (input)
                     {
                         case "1": // Open new account
-                            Console.WriteLine("Enter the name of the new account:");
-                            string name = Console.ReadLine();
-                            Console.WriteLine("Enter starting balance:");
-                            if (!float.TryParse(Console.ReadLine(), out float amount)) // Parsing starting balance input into float
+                            Console.WriteLine("Do you want to open a Normal account or a savings account? ( 1 or 2 )");
+                            string accountType = Console.ReadLine();
+
+                            if (accountType == "1")
                             {
-                                Console.WriteLine("Invalid amount.");
+                                Console.Clear();
+                                Console.WriteLine("You have chosen to open a Normal account.\n");
+                                Console.WriteLine("Enter the name of the new account:");
+                                string name = Console.ReadLine();
+                                Console.WriteLine("Enter starting balance:");
+                                if (!float.TryParse(Console.ReadLine(), out float amount)) // Parsing starting balance input into float
+                                {
+                                    Console.WriteLine("Invalid amount.");
+                                    PressAnyKeyToContinue();
+                                    break;
+                                }
+
+                                Account newAccount = new Account(name, amount); // Creating new account
+                                currentUser.accountsOnThisUser.Add(newAccount); // Adding account to user's account list
+
+                                Console.WriteLine($"Account '{name}' created successfully with balance {amount}!"); // Confirmation message
                                 PressAnyKeyToContinue();
-                                break;
+
                             }
-
-                            Account newAccount = new Account(name, amount); // Creating new account
-                            currentUser.accountsOnThisUser.Add(newAccount); // Adding account to user's account list
-
-                            Console.WriteLine($"Account '{name}' created successfully with balance {amount}!"); // Confirmation message
-                            PressAnyKeyToContinue();
+                            else if (accountType == "2")
+                            {
+                                Console.Clear();
+                                Console.WriteLine("You have chosen to open a Savings account.\n");
+                                Console.WriteLine("Enter the name of the new savings account:");
+                                string name = Console.ReadLine();
+                                Console.WriteLine("Enter starting balance:");
+                                if (!float.TryParse(Console.ReadLine(), out float amount)) // Parsing starting balance input into float
+                                {
+                                    Console.WriteLine("Invalid amount.");
+                                    PressAnyKeyToContinue();
+                                    break;
+                                }
+                                SavingsAccount newSavingsAccount = new SavingsAccount(name, amount); // Creating new savings account
+                                currentUser.accountsOnThisUser.Add(newSavingsAccount); // Adding savings account to user's account list
+                                Console.WriteLine($"Savings account '{name}' created successfully with balance {amount}!"); // Confirmation message
+                                PressAnyKeyToContinue();
+                            }
+                            else
+                            {
+                                Console.WriteLine("Invalid account type.");
+                                PressAnyKeyToContinue();
+                            }
                             break;
                         case "2": // Deposit
                             Console.WriteLine("Which of your accounts would you like to deposit into?");

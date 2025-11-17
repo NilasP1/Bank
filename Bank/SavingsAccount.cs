@@ -15,35 +15,33 @@ namespace Bank
         // Constructor
         public SavingsAccount(string name, float balance, float interestRate = 0.05f) : base(name, balance)
         {
-            InterestRate = interestRate;
-            transactionHistory.Add($"Savings account created with interest rate: {InterestRate * 100}%");
+            InterestRate = interestRate; // Default to 5% if not specified
+            transactionHistory.Add($"Savings account created with interest rate: {InterestRate * 100}%"); //added interest rate to history
 
-
-
-            StartInterestGrowth();
+            StartInterestGrowth(); // Start automatic interest growth
         }
 
         public SavingsAccount() : base()
         {
-            InterestRate = 0.05f;
-            transactionHistory.Add($"Savings account created with interest rate: {InterestRate * 100}%");
+            InterestRate = 0.05f; // Default to 5%
+            transactionHistory.Add($"Savings account created with interest rate: {InterestRate * 100}%"); //added interest rate to history
 
-            StartInterestGrowth();
+            StartInterestGrowth(); // Start automatic interest growth
         }
 
         // Method to grow money by interest
-        public void ApplyInterest()
+        public void ApplyInterest() 
         {
-            float interest = balance * InterestRate;
-            balance += interest;
-            transactionHistory.Add($"Interest applied: {interest}. New balance: {balance}");
+            float interest = balance * InterestRate; // Calculate interest
+            balance += interest; // Apply interest to balance
+            transactionHistory.Add($"Interest applied: {interest}. New balance: {balance}"); // Log interest application
         }
 
         // Override withdrawal behavior: not allowed
         public void Withdraw(float amount)
         {
-            Console.WriteLine("Withdrawals are not allowed from a savings account.");
-            transactionHistory.Add($"Attempted withdrawal of {amount} denied.");
+            Console.WriteLine("Withdrawals are not allowed from a savings account."); // Inform user
+            transactionHistory.Add($"Attempted withdrawal of {amount} denied."); // Log denied withdrawal
         }
 
         // Start automatic interest growth

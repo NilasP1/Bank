@@ -19,7 +19,7 @@ namespace Bank
             bool running = true; // Main menu loop control
             bool userLoggingIn = true; // Login loop control
 
-            
+
 
             while (true)// Infinite loop to allow multiple logins and user creations
             {
@@ -38,7 +38,7 @@ namespace Bank
                         Console.WriteLine("Enter password:");
                         string inputPassword = Console.ReadLine(); //Saving input password in inputPassword
 
-                        if(inputUsername == "Admin" && inputPassword == "Admin")
+                        if (inputUsername == "Admin" && inputPassword == "Admin")
                         {
                             userLoggingIn = false; // exit login loop
                             adminUsername = inputUsername;
